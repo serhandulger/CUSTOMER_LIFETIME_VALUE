@@ -15,6 +15,16 @@
 # 7. Customer Lifetime Value (CLTV = (customer_value / churn_rate) x profit_margin)
 # 8. Creating Segments
 
+############################################
+# SECOND APPROACH
+############################################
+
+# 1. Calculating BASIC CLV
+# 2. Calculating GRANULAR CLV
+# 3. Calculating TRADITIONAL CLV
+
+# FIRST APPROACH
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -27,7 +37,7 @@ pd.set_option('display.width', 500)
 from sklearn.preprocessing import MinMaxScaler
 #pd.set_option('display.float_format', lambda x: '%.4f' % x)
 
-df = pd.read_excel("/Users/serhandulger/PycharmProjects/DSMLBC_7/WEEK_3/DATASETS/online_retail_II.xlsx", sheet_name="Year 2009-2010")
+df = pd.read_excel("/Users/serhandulger/online_retail_II.xlsx", sheet_name="Year 2009-2010")
 
 import datetime as dt
 df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"], format="%Y-%m-%d %H:%M:%S")
@@ -156,11 +166,11 @@ def calculate_cohort(df):
 
     cohort_year, cohort_month, _ = get_date(df, "CohortMonth")
 
-    # Calculate difference in years
+    # Calculating difference in years
 
     years_diff = invoice_year - cohort_year
 
-    # Calculate difference in months
+    # Calculating difference in months
 
     months_diff = invoice_month - cohort_month
 
@@ -208,10 +218,10 @@ monthly_revenue = df.groupby(["Customer ID","InvoiceMonth"])["TotalPrice"].sum()
 monthly_revenue = np.mean(monthly_revenue)
 monthly_revenue
 
-# Define lifespan to 36 months
+# Defining lifespan to 36 months
 lifespan_months = 36
 
-# Calculate basic CLV
+# Basic CLV
 clv_basic = monthly_revenue * lifespan_months
 
 # Print basic CLV value
@@ -229,7 +239,7 @@ revenue_per_purchase = df.groupby(['Invoice'])['TotalPrice'].mean().mean()
 # Calculating average number of unique invoices per customer per month
 frequency_per_month = df.groupby(['Customer ID','InvoiceMonth'])['Invoice'].nunique().mean()
 
-# Define lifespan to 36 months
+# Defining lifespan to 36 months
 lifespan_months = 36
 
 # Calculating granular CLV
@@ -244,17 +254,17 @@ print('Frequency Per Month {:.1f} USD'.format(frequency_per_month))
 # CALCULATING TRADITIONAL CLV
 ##################################################
 
-# Calculate monthly spend per customer
+# Calculating monthly spend per customer
 monthly_revenue = df.groupby(['Customer ID','InvoiceMonth'])['TotalPrice'].sum().mean()
 
-# Calculate average monthly retention rate
+# Calculating average monthly retention rate
 retention_rate = retention.iloc[:,1:].mean().mean()
 
-# Calculate average monthly churn rate
+# Calculating average monthly churn rate
 churn_rate = 1 - retention_rate
 
-# Calculate traditional CLV
+# Calculating traditional CLV
 clv_traditional = monthly_revenue * (retention_rate / churn_rate)
 
-# Print traditional CLV and the retention rate values
+# Traditional CLV and the retention rate values
 print('Average traditional CLV is {:.1f} USD at {:.1f} % retention_rate'.format(clv_traditional, retention_rate*100))
